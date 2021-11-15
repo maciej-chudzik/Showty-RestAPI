@@ -10,10 +10,8 @@ message_schema = MessageSchema()
 
 class Conversations(Resource):
 
-    @jwt_required
-    def get(self):
+    def get(self, login):
 
-        login = get_jwt_identity()
         user = UserModel.find_by_username(login)
         if user:
 
@@ -21,13 +19,11 @@ class Conversations(Resource):
         else:
             return {"message": "User not found"}, 404
 
-    @jwt_required
-    def delete(self, otherlogin):
+    def delete(self, loginA, loginB):
 
-        login = get_jwt_identity()
-        user = UserModel.find_by_username(login)
+        user = UserModel.find_by_username(loginA)
         if user:
-            messages_to_delete = MessageModel.find_by_pair(login, otherlogin)
+            messages_to_delete = MessageModel.find_by_pair(loginA, loginB)
             if messages_to_delete:
                 for message in messages_to_delete:
                     message.delete_from_db()
